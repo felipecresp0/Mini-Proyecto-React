@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../services/apiMock';
 import PrimaryButton from '../components/PrimaryButton';
 import { Lesson } from '../types';
 import { ArrowLeftIcon } from '../components/icons/IconComponents';
+import { api } from '../services/api';
+
 
 const CreateCoursePage: React.FC = () => {
     const navigate = useNavigate();
@@ -44,33 +45,33 @@ const CreateCoursePage: React.FC = () => {
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!imageFile || !title || !price || !description) {
-            alert('Please fill all fields and select an image.');
-            return;
-        }
+  e.preventDefault();
+  setIsSubmitting(true);
 
-        setIsSubmitting(true);
-        
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('category', category);
-        formData.append('price', price);
-        formData.append('description', description);
-        formData.append('lessons', JSON.stringify(lessons.filter(l => l.title && l.duration)));
-        formData.append('file', imageFile); // 'file' should match the field name in NestJS FileInterceptor
+  const formData = new FormData();
+  formData.append('title', title);
+  formData.append('category', category);
+  formData.append('price', price);
+  formData.append('description', description);
+  formData.append(
+    'lessons',
+    JSON.stringify(lessons.filter(l => l.title && l.duration)),
+  );
+  if (imageFile) {
+    formData.append('file', imageFile);
+  }
 
-        try {
-            const newCourse = await api.createCourse(formData);
-            alert(`Course "${newCourse.title}" created successfully!`);
-            navigate(`/course/${newCourse.id}`);
-        } catch (error) {
-            console.error('Failed to create course:', error);
-            alert('Failed to create course. Please try again.');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+  try {
+    const newCourse = await api.createCourse(formData);
+    alert(`Curso "${newCourse.title}" creado correctamente`);
+    navigate(`/course/${newCourse.id}`);
+  } catch (error) {
+    console.error(error);
+    alert('Error al crear el curso');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
     return (
         <div className="p-6">

@@ -2,12 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Course } from '../types';
-import { api } from '../services/apiMock';
 import RatingStars from '../components/RatingStars';
 import PrimaryButton from '../components/PrimaryButton';
 import { useFavorites } from '../context/FavoritesContext';
 import { useCart } from '../context/CartContext';
 import { HeartIcon, ArrowLeftIcon } from '../components/icons/IconComponents';
+import { api } from '../services/api';
 
 const CourseDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,16 +22,22 @@ const CourseDetailPage: React.FC = () => {
   const inCart = id ? isInCart(id) : false;
 
   useEffect(() => {
-    if (id) {
-      const fetchCourse = async () => {
-        setLoading(true);
-        const data = await api.getCourseById(id);
-        setCourse(data);
-        setLoading(false);
-      };
-      fetchCourse();
+  if (!id) return;
+
+  const loadCourse = async () => {
+    try {
+      setLoading(true);
+      const course = await api.getCourseById(id);
+      setCourse(course);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-  }, [id]);
+  };
+
+  loadCourse();
+}, [id]);
 
   const handleFavoriteToggle = () => {
     if (!id) return;

@@ -1,27 +1,35 @@
 
 import React, { useEffect, useState } from 'react';
 import { Course } from '../types';
-import { api } from '../services/apiMock';
 import { useAuth } from '../context/AuthContext';
 import CourseCardHorizontal from '../components/CourseCardHorizontal';
 import CourseCardVertical from '../components/CourseCardVertical';
 import { HorizontalCardSkeleton, VerticalCardSkeleton } from '../components/LoadingSkeleton';
 import { SearchIcon, FilterIcon, ChevronDownIcon } from '../components/icons/IconComponents';
+import { api } from '../services/api';
+
 
 const HomePage: React.FC = () => {
+   console.log('HomePage render');
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchCourses = async () => {
+useEffect(() => {
+  const loadCourses = async () => {
+    try {
       setLoading(true);
-      const data = await api.getCourses();
-      setCourses(data);
+      const coursesFromApi = await api.getCourses();
+      setCourses(coursesFromApi);
+    } catch (error) {
+      console.error('Error loading courses:', error);
+    } finally {
       setLoading(false);
-    };
-    fetchCourses();
-  }, []);
+    }
+  };
+
+  loadCourses();
+}, []);
 
   const popularCourses = courses.slice(0, 5);
   const recommendedCourses = courses.slice(5, 15);

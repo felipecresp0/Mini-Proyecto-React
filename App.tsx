@@ -36,13 +36,16 @@ const Main: React.FC = () => {
   const { user } = useAuth();
   const location = useLocation();
 
+  console.log('location.pathname =>', location.pathname);
+
+
   const authRoutes = ['/', '/signup', '/signin'];
   const showBottomNav = user && !authRoutes.includes(location.pathname);
 
   return (
     <div className="bg-light-bg min-h-screen font-sans">
       <main className="max-w-md mx-auto bg-white min-h-screen shadow-lg pb-24">
-        <Routes>
+        {/*<Routes>
           <Route path="/" element={!user ? <OnboardingPage /> : <Navigate to="/home" />} />
           <Route path="/signup" element={!user ? <SignUpPage /> : <Navigate to="/home" />} />
           <Route path="/signin" element={!user ? <SignInPage /> : <Navigate to="/home" />} />
@@ -55,7 +58,18 @@ const Main: React.FC = () => {
           <Route path="/create-course" element={<ProtectedRoute><CreateCoursePage /></ProtectedRoute>} />
 
           <Route path="*" element={<Navigate to={user ? "/home" : "/"} />} />
-        </Routes>
+        </Routes>*/}
+        <Routes>
+  <Route path="/" element={<Navigate to="/home" />} />
+
+  {/* Puedes comentar/signup/signin mientras pruebas */}
+  {/* <Route path="/signup" element={!user ? <SignUpPage /> : <Navigate to="/home" />} /> */}
+  {/* <Route path="/signin" element={!user ? <SignInPage /> : <Navigate to="/home" />} /> */}
+  
+  <Route path="/home" element={<HomePage />} />
+  <Route path="/course/:id" element={<CourseDetailPage />} />
+  {/* resto igual o comentado mientras pruebas */}
+</Routes>
       </main>
       {showBottomNav && <BottomNav />}
     </div>
